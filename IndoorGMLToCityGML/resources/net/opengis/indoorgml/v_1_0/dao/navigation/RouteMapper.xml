@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+	
+	<resultMap type="Route" id="RouteResultMap" extends="IndoorObjectResultMap">
+    	<id property="id" column="ID" /> 
+    	
+    	<association property="startRouteNode" column="STARTROUTENODE_ID" select="selectRouteNode" />
+    	<association property="endRouteNode" column="ENDROUTENODE_ID" select="selectRouteNode" />
+    	<association property="routeNodes" column="id" select="selectRouteNodes" />
+    	<association property="path" column="id" select="selectPath" />
+    </resultMap>
+
+	<insert 
+		id="insertRoute"
+		parameterType="Route"
+		useGeneratedKeys="true"
+		>
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="BEFORE">
+			SELECT ID 
+			FROM IndoorObject 
+			WHERE GMLID = #{gmlID} 
+     	</selectKey>
+		INSERT INTO Route (ID, STARTROUTENODE_ID, ENDROUTENODE_ID, STRING_ID)
+		VALUES (#{id}, #{startRouteNodeID}, #{endRouteNodeID}, #{stringID})
+	</insert>
+	
+	<select
+		id="selectRoute"
+		parameterType="string"
+		resultMap="RouteResultMap"
+	>
+		SELECT * 
+		FROM Route R
+			LEFT OUTER JOIN IndoorObject IO on R.ID = IO.ID
+		WHERE R.STRING_ID = #{id} 
+	</select>
+</mapper>

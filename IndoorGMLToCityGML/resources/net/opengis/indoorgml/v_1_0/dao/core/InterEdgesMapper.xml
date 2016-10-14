@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="InterEdges" id="InterEdgesResultMap" extends="IndoorObjectResultMap">
+    	<id property="id" column="ID" /> 
+    	
+    	<collection property="interLayerConnectionMember" column="id" select="selectInterLayerConnection" />
+    </resultMap>
+    
+	<insert 
+		id="insertInterEdges"
+		parameterType="InterEdges"
+		useGeneratedKeys="true"
+		>
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="BEFORE">
+			SELECT ID 
+			FROM IndoorObject 
+			WHERE GMLID = #{gmlID} 
+     	</selectKey>
+		INSERT INTO InterEdges (ID, MULTILAYEREDGRAPH_ID)
+		VALUES (#{id}, #{parents.id})
+	</insert>
+	
+	<select
+		id="selectInterEdges"
+		parameterType="int"
+		resultMap="InterEdgesResultMap"
+	>
+		SELECT * 
+		FROM InterEdges IE
+			LEFT OUTER JOIN IndoorObject IO on IE.ID = IO.ID
+		WHERE IE.MULTILAYEREDGRAPH_ID = #{id} 
+	</select>	
+	
+</mapper>

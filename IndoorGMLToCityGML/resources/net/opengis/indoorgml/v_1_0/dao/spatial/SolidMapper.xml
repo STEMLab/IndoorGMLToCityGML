@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="Solid" id="SolidResultMap">
+	
+		<id property="id" column="ID" />
+		
+		<result property="gmlId" column="GMLID" />
+        <result property="srsName" column="SRS_NAME" />
+        <result property="srsDimension" column="SRS_DIMENSION" />
+        <result property="isXLink" column="IS_XLINK"/>
+        
+        <association property="exterior" column="EXTERIOR" select="selectSurface" />
+        
+        <!-- TODO -->
+        <!-- <result property="geometry" column="GEOM" /> -->
+    </resultMap>
+	
+    <!-- 
+    <resultMap type="HashMap" id="SolidInteriorMemberResultMap">
+    	<association property="solid" javaType="Solid" column="SOLID_ID" foreignColumn="ID"/>
+    	<association property="surface" javaType="Surface" column="SURFACE_ID" foreignColumn="ID"/>
+    </resultMap>
+     -->
+     
+     
+    <insert
+    	id="insertSolid"
+    	parameterType="Solid"
+    	flushCache="true"
+		useGeneratedKeys="true"
+	>
+		INSERT INTO Solid 
+		(GMLID, SRS_NAME, SRS_DIMENSION, IS_XLINK, EXTERIOR, GEOM)
+		VALUES (#{gmlId}, #{srsName}, #{srsDimension}, #{isXLink}, #{exterior.id}, ST_GEOMZFROMWKB(#{geometry},0))
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="AFTER">
+			SELECT max(ID) FROM Solid
+     	</selectKey>
+	</insert>
+    
+    <insert
+		id="insertSolidInterior"
+		parameterType="HashMap"
+		flushCache="true"
+		>
+		INSERT INTO SolidInterior (SOLID_ID, SURFACE_ID)
+		VALUES (#{solid.id}, #{surface.id})	
+	</insert>
+    
+	<select
+     	id="selectSolid"
+     	resultMap="SolidResultMap"
+     	parameterType="int"
+     >
+     	SELECT ID, GMLID, SRS_NAME, SRS_DIMENSION, IS_XLINK, EXTERIOR
+     	FROM Solid
+     	WHERE ID = #{id}
+     </select>
+     
+     <!--  
+     <select
+     	id="selectSurfaceForSolid"
+     	resultMap="SurfaceResultMap"
+     	parameterType="int"
+     >
+     	SELECT *
+     	FROM SURFACE SF
+     		LEFT JOIN SolidInterior SI on SI.SURFACE_ID = SF.ID
+     		LEFT JOIN SOLID SO on SO.ID = SI.SOLID_ID
+     	WHERE
+     		SF.ID = #{id}
+     </select>
+	-->
+</mapper>

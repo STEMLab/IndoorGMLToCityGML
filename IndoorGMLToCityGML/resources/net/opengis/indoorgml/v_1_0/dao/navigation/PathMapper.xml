@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+	
+	<resultMap type="Path" id="PathResultMap" extends="IndoorObjectResultMap">
+    	<id property="id" column="ID" /> 
+    	
+    	<collection property="routeMember" column="id" select="selectRouteSegment" />
+    </resultMap>
+
+	<insert 
+		id="insertPath"
+		parameterType="Path"
+		useGeneratedKeys="true"
+		>
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="BEFORE">
+			SELECT ID 
+			FROM IndoorObject 
+			WHERE GMLID = #{gmlID} 
+     	</selectKey>
+		INSERT INTO Path (ID, ROUTE_ID)
+		VALUES (#{id}, #{parents.id})
+	</insert>
+	
+	<select
+		id="selectPath"
+		parameterType="int"
+		resultMap="PathResultMap"
+	>
+		SELECT * 
+		FROM Path P
+			LEFT OUTER JOIN IndoorObject IO on P.ID = IO.ID
+		WHERE P.ROUTE_ID = #{id} 
+	</select>
+</mapper>

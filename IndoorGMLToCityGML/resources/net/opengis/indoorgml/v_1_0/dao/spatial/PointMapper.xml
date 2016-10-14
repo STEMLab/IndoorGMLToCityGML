@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="Point" id="PointResultMap">
+		<id property="id" column="ID" />
+		
+		<result property="gmlId" column="GMLID" />
+        <result property="srsName" column="SRS_NAME" />
+        <result property="srsDimension" column="SRS_DIMENSION" />
+        <result property="isXLink" column="IS_XLINK"/>
+        
+        <result property="geometry" column="GEOM" />
+    </resultMap>
+    
+    <insert
+    	id="insertPoint"
+    	parameterType="Point"
+    	flushCache="true"
+		useGeneratedKeys="true"
+	>
+		INSERT INTO Point 
+		(
+			GMLID, SRS_NAME, SRS_DIMENSION, IS_XLINK,
+			GEOM
+		)
+		VALUES 
+		(
+			#{gmlId}, #{srsName}, #{srsDimension}, #{isXLink}, 
+			ST_POINTZFROMWKB(#{geometry},0)
+		)
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="AFTER">
+			SELECT max(ID) FROM Point
+     	</selectKey>
+	</insert>
+    
+	<select
+     	id="selectPoint"
+     	resultMap="PointResultMap"
+     	parameterType="int"
+     >
+     	SELECT ID, GMLID, SRS_NAME, SRS_DIMENSION, IS_XLINK, ST_ASBINARY(GEOM) AS GEOM
+     	FROM Point
+     	WHERE ID = #{id}
+     </select> 
+     
+	<select
+     	id="selectPointID"
+     	parameterType="String"
+		resultType="int"
+     >
+     	SELECT ID
+     	FROM Point
+     	WHERE GMLID = #{gmlId}
+     </select> 
+     
+     <select
+     	id="selectPointVarByte"
+     	resultMap="PointResultMap"
+     	parameterType="int"
+     >
+     	SELECT *
+     	FROM Point
+     	WHERE ID = #{id}
+     </select> 
+</mapper>

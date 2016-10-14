@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="MultiLayeredGraph" id="MultiLayeredGraphResultMap" extends="IndoorObjectResultMap">
+    	<id property="id" column="ID" /> 
+    	
+    	<collection property="interEdges" column="id" select="selectInterEdges" />
+    	<collection property="spaceLayers" column="id" select="selectSpaceLayers" />
+    </resultMap>
+    
+	<insert 
+		id="insertMultiLayeredGraph"
+		parameterType="MultiLayeredGraph"
+		useGeneratedKeys="true"
+		>
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="BEFORE">
+			SELECT ID 
+			FROM IndoorObject 
+			WHERE GMLID = #{gmlID} 
+     	</selectKey>
+		INSERT INTO MultiLayeredGraph (ID,INDOORFEATRE_ID )
+		VALUES (#{id}, #{parents.id})
+	</insert>
+	
+	<select
+		id="selectMultiLayeredGraph"
+		parameterType="int"
+		resultMap="MultiLayeredGraphResultMap"
+	>
+		SELECT * 
+		FROM MultiLayeredGraph MLG
+			LEFT OUTER JOIN IndoorObject IO on MLG.ID = IO.ID
+		WHERE MLG.INDOORFEATRE_ID = #{id} 
+	</select>	
+	
+</mapper>

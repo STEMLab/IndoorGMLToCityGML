@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+	
+	<resultMap type="PrimalSpaceFeatures" id="PrimalSpaceFeaturesResultMap" extends="IndoorObjectResultMap">
+    	<id property="id" column="ID" /> 
+    	
+    	<collection property="cellSpace" column="id" select="selectCellSpace" />
+    	<collection property="cellSpaceBoundary" column="id" select="selectCellSpaceBoundary" />
+    </resultMap>
+    
+	<insert 
+		id="insertPrimalSpaceFeatures"
+		parameterType="PrimalSpaceFeatures"
+		useGeneratedKeys="true"
+		>
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="BEFORE">
+			SELECT ID 
+			FROM IndoorObject 
+			WHERE GMLID = #{gmlID} 
+     	</selectKey>
+		INSERT INTO PrimalSpaceFeature (ID,INDOORFEATRE_ID )
+		VALUES (#{id}, #{parents.id})
+	</insert>
+	
+	<select
+		id="selectPrimalSpaceFeatures"
+		parameterType="int"
+		resultMap="PrimalSpaceFeaturesResultMap"
+	>
+		SELECT * 
+		FROM PrimalSpaceFeature PSF
+			LEFT OUTER JOIN IndoorObject IO on PSF.ID = IO.ID
+		WHERE PSF.INDOORFEATRE_ID = #{id} 
+	</select>	
+</mapper>

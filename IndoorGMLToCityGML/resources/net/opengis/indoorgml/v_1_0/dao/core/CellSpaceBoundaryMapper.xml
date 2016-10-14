@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="CellSpaceBoundary" id="CellSpaceBoundaryResultMap" extends="IndoorObjectResultMap">
+    	<id property="id" column="ID" /> 
+    	
+    	<result property="navigableType" column="NAVIGABLETYPE"/>
+    	
+    	<association property="geometry3D" column="GEOMETRY3D" select="selectSurface"/>
+    	<association property="geometry2D" column="GEOMETRY2D" select="selectCurve"/>
+    	<association property="duality" column="DUALITY" select="selectIndoorObjectGMLID"/>
+    	<collection property="externalReference" column="id" select="selectExternalReferenceByCellSpaceBoundary"/>
+    	
+    </resultMap>
+    
+	<insert 
+		id="insertCellSpaceBoundary"
+		parameterType="CellSpaceBoundary"
+		useGeneratedKeys="true"
+		>
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="BEFORE">
+			SELECT ID 
+			FROM IndoorObject 
+			WHERE GMLID = #{gmlID} 
+     	</selectKey> 
+		INSERT INTO CellSpaceBoundary (ID, PRIMALSPACEFEATURE_ID, GEOMETRY3D, GEOMETRY2D, DUALITY, NAVIGABLETYPE)
+		VALUES (#{id}, #{parents.id}, #{geometry3D.id}, #{geometry2D.id}, #{dualityID}, #{navigableType})
+	</insert>
+	
+	<select
+		id="selectCellSpaceBoundary"
+		parameterType="int"
+		resultMap="CellSpaceBoundaryResultMap"
+	>
+		SELECT * 
+		FROM CellSpaceBoundary CSB
+			LEFT OUTER JOIN IndoorObject IO on CSB.ID = IO.ID
+		WHERE CSB.PRIMALSPACEFEATURE_ID = #{id} 
+	</select>	
+	
+</mapper>

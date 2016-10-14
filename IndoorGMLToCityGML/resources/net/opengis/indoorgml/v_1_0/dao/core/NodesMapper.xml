@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="Nodes" id="NodesResultMap" extends="IndoorObjectResultMap">
+    	<id property="id" column="ID" /> 
+    	
+    	<collection property="stateMember" column="id" select="selectState" />
+    </resultMap>
+    
+	<insert 
+		id="insertNodes"
+		parameterType="Nodes"
+		useGeneratedKeys="true"
+		>
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="BEFORE">
+			SELECT ID 
+			FROM IndoorObject 
+			WHERE GMLID = #{gmlID} 
+     	</selectKey>
+		INSERT INTO Nodes (ID, SPACELAYER_ID)
+		VALUES (#{id}, #{parents.id})
+	</insert>
+	
+	<select
+		id="selectNodes"
+		parameterType="int"
+		resultMap="NodesResultMap"
+	>
+		SELECT * 
+		FROM Nodes N
+			LEFT OUTER JOIN IndoorObject IO on N.ID = IO.ID
+		WHERE N.SPACELAYER_ID = #{id} 
+	</select>	
+</mapper>

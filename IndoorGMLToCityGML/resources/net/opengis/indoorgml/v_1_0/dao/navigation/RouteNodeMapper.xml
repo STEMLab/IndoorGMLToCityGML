@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+	
+	<resultMap type="RouteNode" id="RouteNodeResultMap" extends="IndoorObjectResultMap">
+    	<id property="id" column="ID" /> 
+    	
+    	<association property="referencedState" column="REFERENCEDSTATE_ID" select="selectStateByID" />
+    	<association property="geometry" column="GEOMETRY" select="selectPoint" />
+    </resultMap>
+
+	<insert 
+		id="insertRouteNodePRouteNodes"
+		parameterType="RouteNode"
+		useGeneratedKeys="true"
+		>
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="BEFORE">
+			SELECT ID 
+			FROM IndoorObject 
+			WHERE GMLID = #{gmlID} 
+     	</selectKey>
+		INSERT INTO RouteNode (ID, ROUTENODES_ID, REFERENCEDSTATE_ID, GEOMETRY)
+		VALUES (#{id}, #{parents.id}, #{referencedStateID}, #{geometryID})
+	</insert>
+	
+	<insert 
+		id="insertRouteNodePRoute"
+		parameterType="RouteNode"
+		useGeneratedKeys="true"
+		>
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="BEFORE">
+			SELECT ID 
+			FROM IndoorObject 
+			WHERE GMLID = #{gmlID} 
+     	</selectKey>
+		INSERT INTO RouteNode (ID, ROUTE_ID, REFERENCEDSTATE_ID, GEOMETRY)
+		VALUES (#{id}, #{parents.id}, #{referencedStateID}, #{geometryID})
+	</insert>
+	
+	<select
+		id="selectRouteNode"
+		parameterType="int"
+		resultMap="RouteNodeResultMap"
+	>
+		SELECT * 
+		FROM RouteNode RN
+			LEFT OUTER JOIN IndoorObject IO on RN.ID = IO.ID
+		WHERE RN.ID = #{id} 
+	</select>
+	
+	<select
+		id="selectRouteNodByeRouteID"
+		parameterType="int"
+		resultMap="RouteNodeResultMap"
+	>
+		SELECT * 
+		FROM RouteNode RN
+			LEFT OUTER JOIN IndoorObject IO on RN.ID = IO.ID
+		WHERE RN.ROUTE_ID = #{id} 
+	</select>
+	
+	<select
+		id="selectRouteNodByeRouteNodesID"
+		parameterType="int"
+		resultMap="RouteNodeResultMap"
+	>
+		SELECT * 
+		FROM RouteNode RN
+			LEFT OUTER JOIN IndoorObject IO on RN.ID = IO.ID
+		WHERE RN.ROUTENODES_ID = #{id} 
+	</select>
+</mapper>

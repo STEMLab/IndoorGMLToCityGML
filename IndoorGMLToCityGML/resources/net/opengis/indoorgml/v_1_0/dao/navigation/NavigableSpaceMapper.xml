@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="NavigavleSpace" id="NavigavleSpaceResultMap">
+    	<id property="id" column="ID" />
+    	<!-- Attributes -->
+		<result property="clazz" column="CLAZZ" />
+        <result property="classCodeSpace" column="CLASS_CODESPACE" />
+        <result property="func" column="FUNC" />
+        <result property="funcCodeSpace" column="FUNC_CODESPACE" />
+        <result property="usage" column="USAGE" />
+        <result property="usageCodeSpace" column="USAGE_CODESPACE" />
+    </resultMap>
+    
+	<insert 
+		id="insertNavigavleSpace"
+		parameterType="NavigavleSpace"
+		>
+		INSERT INTO NavigavleSpace 
+		(
+			ID, 
+			CLAZZ, 
+			CLASS_CODESPACE, 
+			FUNC, 
+			FUNC_CODESPACE, 
+			USAGE, 
+			USAGE_CODESPACE
+		)
+		VALUES (
+			#{parents.id},
+			#{clazz},
+			#{classCodeSpace},
+			#{function},
+			#{functionCodeSpace},
+			#{usage},
+			#{usageCodeSpace}
+		)
+	</insert>
+	
+	<select
+		id="selectNavigavleSpace"
+		parameterType="int"
+		resultMap="NavigavleSpaceResultMap"
+	>
+		SELECT * 
+		FROM NavigavleSpace NS
+		WHERE NS.ID = #{id} 
+	</select>	
+	
+</mapper>

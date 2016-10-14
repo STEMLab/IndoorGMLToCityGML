@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+	
+	<resultMap type="IndoorFeature" id="IndoorFeatureResultMap" extends="IndoorObjectResultMap">
+    	<id property="id" column="ID" /> 
+    	
+    	<association property="primalSpaceFeatures" column="id" select="selectPrimalSpaceFeatures" />
+    	<association property="multiLayeredGraph" column="id" select="selectMultiLayeredGraph" />
+    </resultMap>
+
+	<insert 
+		id="insertIndoorFeature"
+		parameterType="IndoorFeature"
+		useGeneratedKeys="true"
+		>
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="BEFORE">
+			SELECT ID 
+			FROM IndoorObject 
+			WHERE GMLID = #{gmlID} 
+     	</selectKey>
+		INSERT INTO IndoorFeature (ID, STRING_ID)
+		VALUES (#{id}, #{stringID})
+	</insert>
+	
+	<select
+		id="selectIndoorFeature"
+		parameterType="string"
+		resultMap="IndoorFeatureResultMap"
+	>
+		SELECT * 
+		FROM IndoorFeature IF
+			LEFT OUTER JOIN IndoorObject IO on IF.ID = IO.ID
+		WHERE IF.STRING_ID = #{id} 
+	</select>
+</mapper>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="IndoorObject" id="IndoorObjectResultMap">
+		<id property="id" column="ID" />
+		<result property="indoorObjectType" column="INDOOROBJECT_TYPE" />
+        <result property="gmlID" column="GMLID" />
+        <result property="name" column="NAME" />
+        <result property="nameCodeSpace" column="NAME_CODESPACE" />
+        <result property="description" column="DESCRIPTION" />
+    </resultMap>
+
+	<insert 
+		id="insertIndoorObject"
+		parameterType="IndoorObject"
+		flushCache="true"
+		>
+		INSERT INTO IndoorObject (INDOOROBJECT_TYPE, GMLID, NAME, NAME_CODESPACE, DESCRIPTION)
+		VALUES (#{indoorObjectType}, #{gmlID}, #{name}, #{nameCodeSpace}, #{description})
+	</insert>
+	
+	<select
+		id="selectAllIndoorObject"
+		resultMap="IndoorObjectResultMap"
+	>
+		SELECT *
+		FROM IndoorObject
+	</select>
+	
+	<select
+		id="selectIndoorObject"
+		parameterType="int"
+		resultMap="IndoorObjectResultMap"
+	>
+		SELECT *
+		FROM IndoorObject 
+		WHERE ID = #{id} 
+	</select>
+	
+	<select
+		id="selectIndoorObjectID"
+		parameterType="String"
+		resultType="int"
+	>
+		SELECT ID 
+		FROM IndoorObject 
+		WHERE GMLID = #{gmlID} 
+	</select>
+	
+	<select
+		id="selectIndoorObjectGMLID"
+		parameterType="int"
+		resultType="String"
+	>
+		SELECT GMLID 
+		FROM IndoorObject 
+		WHERE ID = #{id} 
+	</select>
+	
+</mapper>

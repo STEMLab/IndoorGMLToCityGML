@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="State" id="StateResultMap" extends="IndoorObjectResultMap">
+    	<id property="id" column="ID" /> 
+    	
+    	<association property="duality" column="duality" select="selectIndoorObjectGMLID" />
+    	<association property="geometry" column="geometry" select="selectPoint" />
+    	<collection property="connects" column="id" select="selectTransitionConnectsInfo" />
+    </resultMap>
+    
+	<insert 
+		id="insertState"
+		parameterType="State"
+		useGeneratedKeys="true"
+		>
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="BEFORE">
+			SELECT ID 
+			FROM IndoorObject 
+			WHERE GMLID = #{gmlID} 
+     	</selectKey>
+		INSERT INTO State (ID, NODES_ID, GEOMETRY, DUALITY)
+		VALUES (#{id}, #{parents.id}, #{geometry.id}, #{dualityID})
+	</insert>
+	
+	<select
+		id="selectState"
+		parameterType="int"
+		resultMap="StateResultMap"
+	>
+		SELECT * 
+		FROM State S
+			LEFT OUTER JOIN IndoorObject IO on S.ID = IO.ID
+		WHERE S.NODES_ID = #{id} 
+	</select>	
+	
+	<select
+		id="selectStateByID"
+		parameterType="int"
+		resultMap="StateResultMap"
+	>
+		SELECT * 
+		FROM State S
+			LEFT OUTER JOIN IndoorObject IO on S.ID = IO.ID
+		WHERE S.ID = #{id} 
+	</select>	
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<properties resource="conf/db.properties"/>
+	<settings>
+		<setting name="cacheEnabled" value="true" /> 
+		<setting name="lazyLoadingEnabled" value="true" /> 
+		<setting name="multipleResultSetsEnabled" value="true" />
+	</settings>
+	<typeAliases>
+		<typeAlias type="edu.pnu.mybatis.DBCPDataSourceFactory" alias="DBCP" />
+		<package name="net.opengis.indoorgml.v_1_0.vo"/>
+	</typeAliases>
+	<typeHandlers>
+		<typeHandler javaType="byte[]" jdbcType="BLOB" handler="org.apache.ibatis.type.BlobTypeHandler"/> 
+	</typeHandlers>	
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="DBCP">
+				<property name="driverClassName" value="${driver}" />
+				<property name="url" value="${url}" />
+				<property name="username" value="${username}" />
+				<property name="password" value="${password}" />
+				<property name="initialSize" value="${initialSize}" />
+				<property name="maxActive" value="${maxActive}" />
+				<property name="maxIdle" value="10" />
+				<property name="minIdle" value="0" />
+				<property name="maxWait" value="100" />
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<!-- Geometry Mapper -->
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/spatial/PointMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/spatial/CurveMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/spatial/SurfaceMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/spatial/SolidMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/spatial/MultiCurveMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/spatial/MultiSurfaceMapper.xml"/>
+		
+		<!-- Core Module Mapper -->
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/IndoorFeatureMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/IndoorObjectMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/PrimalSpaceFeaturesMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/CellSpaceMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/CellSpaceBoundaryMapper.xml"/>
+		
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/MultiLayeredGraphMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/InterEdgesMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/InterLayerConnectionMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/SpaceLayersMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/SpaceLayerMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/ExternalReferenceMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/NodesMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/StateMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/EdgesMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/core/TransitionMapper.xml"/>
+		 
+		<!-- Navigation Module Mapper -->
+		<!-- <mapper resource="net/opengis/indoorgml/v_1_0/dao/navigation/NavigableSpaceMapper.xml"/> -->
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/navigation/PathMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/navigation/RouteMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/navigation/RouteNodeMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/navigation/RouteNodesMapper.xml"/>
+		<mapper resource="net/opengis/indoorgml/v_1_0/dao/navigation/RouteSegmentMapper.xml"/>
+		
+	</mappers>
+</configuration>

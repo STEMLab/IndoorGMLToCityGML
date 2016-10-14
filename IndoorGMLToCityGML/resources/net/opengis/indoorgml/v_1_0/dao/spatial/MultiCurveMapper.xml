@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="MultiCurve" id="MultiCurveResultMap">
+	
+		<id property="id" column="ID" />
+		
+		<result property="gmlId" column="GMLID" />
+        <result property="srsName" column="SRS_NAME" />
+        <result property="srsDimension" column="SRS_DIMENSION" />
+        <result property="isXLink" column="IS_XLINK"/>
+        
+        <result property="geometry" column="GEOM" />
+        
+        <collection property="curves" column="id" ofType="Curve" select="selectCurve" />
+    </resultMap>
+
+	<resultMap type="HashMap" id="CurveMemberResultMap">
+    	<association property="multiCurve" javaType="MultiCurve" column="MULTICURVE_ID" foreignColumn="ID"/>
+    	<association property="curve" javaType="Curve" column="CURVE_ID" foreignColumn="ID"/>
+    </resultMap>
+
+	<insert
+    	id="insertMultiCurve"
+    	parameterType="MultiCurve"
+    	flushCache="true"
+		useGeneratedKeys="true"
+	>
+		INSERT INTO MultiCurve 
+		(GMLID, SRS_NAME, SRS_DIMENSION, IS_XLINK, GEOM)
+		VALUES (#{gmlId}, #{srsName}, #{srsDimension}, #{isXLink}, #{geometry})
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="AFTER">
+			SELECT max(ID) FROM MultiCurve
+     	</selectKey>
+	</insert>
+
+	<insert
+		id="insertCurveMember"
+		parameterType="HashMap"
+		flushCache="true"
+		>
+		INSERT INTO CurveMember (MULTICURVE_ID, CURVE_ID)
+		VALUES (#{multiCurve.id}, #{curve.id})	
+	</insert>
+
+	<select
+     	id="selectMultiCurve"
+     	resultMap="MultiCurveResultMap"
+     	parameterType="int"
+     >
+     	SELECT * 
+     	FROM MultiCurve
+     	WHERE ID = #{id}
+     </select>
+     
+</mapper>

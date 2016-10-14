@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="Surface" id="SurfaceResultMap">
+	
+		<id property="id" column="ID" />
+		
+		<result property="gmlId" column="GMLID" />
+        <result property="srsName" column="SRS_NAME" />
+        <result property="srsDimension" column="SRS_DIMENSION" />
+        <result property="isXLink" column="IS_XLINK"/>
+        
+        <result property="isReverse" column="IS_REVERSE" />
+        <result property="isComposite" column="IS_COMPOSITE" />
+        <result property="isTriangulated" column="IS_TRIANGULATED"/>
+        
+        <result property="geometry" column="GEOM" />
+        <result property="polygonGeometry" column="POLYGON_GEOM" />
+        
+        <association property="root" column="ROOT_ID" javaType="Surface" foreignColumn="ID"/>
+        <association property="parent" column="PARENT_ID" javaType="Surface" foreignColumn="ID"/>
+        
+        <collection property="child" column="id" ofType="Surface" select="selectChildSurface" />
+    </resultMap>
+
+    <insert
+    	id="insertSurface"
+    	parameterType="Surface"
+    	flushCache="true"
+		useGeneratedKeys="true"
+	>
+		INSERT INTO Surface 
+		(
+			GMLID, SRS_NAME, SRS_DIMENSION, IS_XLINK, 
+			IS_REVERSE, IS_COMPOSITE, IS_TRIANGULATED,
+			GEOM, POLYGON_GEOM,
+			ROOT_ID, PARENT_ID
+		)
+		VALUES 
+		(
+			#{gmlId}, #{srsName}, #{srsDimension}, #{isXLink}, 
+			#{isReverse}, #{isComposite}, #{isTriangulated},
+			ST_GEOMZFROMWKB(#{geometry},0), ST_GEOMZFROMWKB(#{polygonGeometry},0),
+			#{root.id}, #{parent.id}
+		)
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="AFTER">
+			SELECT max(ID) FROM Surface
+     	</selectKey>
+	</insert>
+    
+	<select
+     	id="selectSurface"
+     	resultMap="SurfaceResultMap"
+     	parameterType="int"
+     >
+     	SELECT ID, PARENT_ID, ROOT_ID, GMLID, SRS_NAME, SRS_DIMENSION, IS_XLINK, IS_REVERSE, IS_COMPOSITE, IS_TRIANGULATED, ST_ASBINARY(GEOM) AS GEOM, ST_ASBINARY(POLYGON_GEOM) AS POLYGON_GEOM
+     	FROM Surface
+     	WHERE ID = #{id}
+     </select>
+     
+     <select
+     	id="selectChildSurface"
+     	resultMap="SurfaceResultMap"
+     	parameterType="int"
+     >
+     	SELECT ID, PARENT_ID, ROOT_ID, GMLID, SRS_NAME, SRS_DIMENSION, IS_XLINK, IS_REVERSE, IS_COMPOSITE, IS_TRIANGULATED, ST_ASBINARY(GEOM) AS GEOM, ST_ASBINARY(POLYGON_GEOM) AS POLYGON_GEOM 
+     	FROM Surface
+     	WHERE PARENT_ID = #{id}
+     </select>
+     
+     <select
+     	id="selectSurfaceVarByte"
+     	resultMap="SurfaceResultMap"
+     	parameterType="int"
+     >
+     	SELECT *
+     	FROM Surface
+     	WHERE ID = #{id}
+     </select>
+     
+     <select
+     	id="selectChildSurfaceVarByte"
+     	resultMap="SurfaceResultMap"
+     	parameterType="int"
+     >
+     	SELECT * 
+     	FROM Surface
+     	WHERE PARENT_ID = #{id}
+     </select> 
+</mapper>

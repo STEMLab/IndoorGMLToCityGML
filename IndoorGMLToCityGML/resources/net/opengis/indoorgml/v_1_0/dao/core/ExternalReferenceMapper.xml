@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="ExternalReference" id="ExternalReferenceResultMap">
+    	<result property="informationSystem" column="INFORMATIONSYSTEM"/>
+    	<result property="name" column="NAME"/>
+    	<result property="uri" column="URI"/>
+    </resultMap>
+    
+	<insert 
+		id="insertExternalReferenceByCellSpace"
+		parameterType="ExternalReference"
+		>
+		INSERT INTO ExternalReference (CELLSPACE_ID, INFORMATIONSYSTEM, NAME, URI)
+		VALUES (#{parents.id}, #{informationSystem}, #{name}, #{uri})
+	</insert>
+	
+	<insert 
+		id="insertExternalReferenceByCellSpaceBoundary"
+		parameterType="ExternalReference"
+		>
+		INSERT INTO ExternalReference (CELLSPACEBOUNDARY_ID, INFORMATIONSYSTEM, NAME, URI)
+		VALUES (#{parents.id}, #{informationSystem}, #{name}, #{uri})
+	</insert>
+	
+	<select
+		id="selectExternalReferenceByCellSpace"
+		parameterType="int"
+		resultMap="ExternalReferenceResultMap"
+	>
+		SELECT INFORMATIONSYSTEM, NAME, URI 
+		FROM ExternalReference 
+		WHERE CELLSPACE_ID = #{id} 
+	</select>	
+	
+	<select
+		id="selectExternalReferenceByCellSpaceBoundary"
+		parameterType="int"
+		resultMap="ExternalReferenceResultMap"
+	>
+		SELECT INFORMATIONSYSTEM, NAME, URI 
+		FROM ExternalReference 
+		WHERE CELLSPACEBOUNDARY_ID = #{id} 
+	</select>
+		
+</mapper>

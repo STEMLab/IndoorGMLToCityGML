@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="InterLayerConnection" id="InterLayerConnectionResultMap" extends="IndoorObjectResultMap">
+    	<id property="id" column="ID" /> 
+    	
+    	<result property="typeOfTopoExpression" column="TYPEOFTOPOECPRESSION"/>
+    	<result property="comment" column="COMMENT"/>
+    	
+    	<association property="interConnectsA" column="INTERCONNECTS_A" 	select="selectIndoorObjectGMLID" />
+    	<association property="interConnectsB" column="INTERCONNECTS_B" 	select="selectIndoorObjectGMLID" />
+    	<association property="connectedLayersA" column="CONNECTEDLAYERS_A" select="selectIndoorObjectGMLID" />
+    	<association property="connectedLayersB" column="CONNECTEDLAYERS_B" select="selectIndoorObjectGMLID" />
+    </resultMap>
+    
+	<insert 
+		id="insertInterLayerConnection"
+		parameterType="InterLayerConnection"
+		useGeneratedKeys="true"
+		>
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="BEFORE">
+			SELECT ID 
+			FROM IndoorObject 
+			WHERE GMLID = #{gmlID} 
+     	</selectKey>
+		INSERT INTO InterLayerConnection (ID, INTEREDGES_ID, TYPEOFTOPOECPRESSION, COMMENT, INTERCONNECTS_A, INTERCONNECTS_B, CONNECTEDLAYERS_A, CONNECTEDLAYERS_B)
+		VALUES (#{id}, #{parents.id}, #{typeOfTopoExpression}, #{comment}, #{interConnectsAID}, #{interConnectsBID}, #{connectedLayersAID}, #{connectedLayersBID})
+	</insert>
+	
+	<select
+		id="selectInterLayerConnection"
+		parameterType="int"
+		resultMap="InterLayerConnectionResultMap"
+	>
+		SELECT * 
+		FROM InterLayerConnection ILC
+			LEFT OUTER JOIN IndoorObject IO on ILC.ID = IO.ID
+		WHERE ILC.INTEREDGES_ID = #{id} 
+	</select>	
+	
+</mapper>

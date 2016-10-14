@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="GeometryCollection" id="GeometryCollectionResultMap">
+	
+		<id property="id" column="ID" />
+		
+		<result property="gmlId" column="GMLID" />
+        <result property="srsName" column="SRS_NAME" />
+        <result property="srsDimension" column="SRS_DIMENSION" />
+        <result property="isXLink" column="IS_XLINK"/>
+        
+        <result property="geometry" column="GEOM" />
+        
+    </resultMap>
+
+	<select
+     	id="selectGeometryCollection"
+     	resultMap="GeometryCollectionResultMap"
+     	parameterType="int"
+     >
+     	SELECT * 
+     	FROM GeometryCollection
+     	WHERE ID = #{id}
+     </select>
+
+</mapper>

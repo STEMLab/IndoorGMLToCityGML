@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="MultiPoint" id="MultiPointResultMap">
+	
+		<id property="id" column="ID" />
+		
+		<result property="gmlId" column="GMLID" />
+        <result property="srsName" column="SRS_NAME" />
+        <result property="srsDimension" column="SRS_DIMENSION" />
+        <result property="isXLink" column="IS_XLINK"/>
+        
+        <result property="geometry" column="GEOM" />
+        
+        <collection property="points" column="id" ofType="Point" select="selectPoint"/>
+    </resultMap>
+
+	<resultMap type="HashMap" id="PointMemberResultMap">
+    	<association property="multiPoint" javaType="MultiPoint" column="MULTIPOINT_ID" foreignColumn="ID"/>
+    	<association property="point" javaType="Point" column="POINT_ID" foreignColumn="ID"/>
+    </resultMap>
+
+	<insert
+    	id="insertMultiPoint"
+    	parameterType="MultiPoint"
+    	flushCache="true"
+		useGeneratedKeys="true"
+	>
+		INSERT INTO MultiPoint 
+		(GMLID, SRS_NAME, SRS_DIMENSION, IS_XLINK, GEOM)
+		VALUES (#{gmlId}, #{srsName}, #{srsDimension}, #{isXLink}, #{geometry})
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="AFTER">
+			SELECT max(ID) FROM MultiPoint
+     	</selectKey>
+	</insert>
+
+    <insert
+		id="insertPointMember"
+		parameterType="HashMap"
+		flushCache="true"
+		>
+		INSERT INTO PointMember (MULTIPOINT_ID, POINT_ID)
+		VALUES (#{multiPoint.id}, #{point.id})	
+	</insert>
+
+	<select
+     	id="selectMultiPoint"
+     	resultMap="MultiPointResultMap"
+     	parameterType="int"
+     >
+     	SELECT * 
+     	FROM MultiPoint
+     	WHERE ID = #{id}
+     </select>
+
+</mapper>

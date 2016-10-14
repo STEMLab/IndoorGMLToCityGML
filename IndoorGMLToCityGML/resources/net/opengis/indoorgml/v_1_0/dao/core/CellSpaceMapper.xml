@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.opengis.indoorgml.core.v_1_0">
+
+	<resultMap type="CellSpace" id="CellSpaceResultMap" extends="IndoorObjectResultMap">
+    	<id property="id" column="ID" /> 
+    	
+    	<result property="navigableType" column="NAVIGABLETYPE"/>
+    	<result property="clazz" column="CLAZZ"/>
+    	<result property="classCodeSpace" column="CLASS_CODESPACE"/>
+    	<result property="function" column="FUNC"/>
+    	<result property="functionCodeSpace" column="FUNC_CODESPACE"/>
+    	<result property="usage" column="USAGE"/>
+    	<result property="usageCodeSpace" column="USAGE_CODESPACE"/>
+    	
+    	<association property="geometry3D" column="GEOMETRY3D" select="selectSolid"/>
+    	<association property="geometry2D" column="GEOMETRY2D" select="selectSurface"/>
+    	<association property="duality" column="DUALITY" select="selectIndoorObjectGMLID"/>
+    	<collection property="partialBoundedBy" column="id" select="selectPatialBoundedBy"/>
+    	<collection property="externalReference" column="id" select="selectExternalReferenceByCellSpace"/>
+    	<!-- NavigableSpace 관련 처리 추가 필요 -->
+    </resultMap>
+    
+	<insert 
+		id="insertCellSpace"
+		parameterType="CellSpace"
+		useGeneratedKeys="true"
+		>
+		<selectKey keyProperty="id" keyColumn="ID" resultType="int" order="BEFORE">
+			SELECT ID 
+			FROM IndoorObject 
+			WHERE GMLID = #{gmlID} 
+     	</selectKey>
+		INSERT INTO CellSpace (ID, PRIMALSPACEFEATURE_ID, GEOMETRY3D, GEOMETRY2D, DUALITY, NAVIGABLETYPE, CLAZZ, CLASS_CODESPACE, FUNC, FUNC_CODESPACE, USAGE, USAGE_CODESPACE)
+		VALUES (#{id}, #{parents.id}, #{geometry3D.id}, #{geometry2D.id}, #{dualityID}, #{navigableType}, #{clazz}, #{classCodeSpace}, #{function}, #{functionCodeSpace}, #{usage}, #{usageCodeSpace})
+	</insert>
+	
+	<insert 
+		id="insertPatialBoundedBy"
+		parameterType="CellSpace"
+		>
+		INSERT INTO PartialBoundedByMapping (CELLSPACE_ID, PARTIALBOUNDEDBY)
+		VALUES (#{id}, #{partialBoundedByID})
+	</insert>
+	
+	<select
+		id="selectCellSpace"
+		parameterType="int"
+		resultMap="CellSpaceResultMap"
+	>
+		SELECT * 
+		FROM CellSpace CS
+			LEFT OUTER JOIN IndoorObject IO on CS.ID = IO.ID
+		WHERE CS.PRIMALSPACEFEATURE_ID = #{id} 
+	</select>	
+	
+	<select
+		id="selectPatialBoundedBy"
+		parameterType="int"
+		resultType="string"
+	>
+		SELECT IO.GMLID AS partialBoundedBy
+		FROM PartialBoundedByMapping PBM
+			LEFT OUTER JOIN IndoorObject IO on PBM.PARTIALBOUNDEDBY = IO.ID
+		WHERE PBM.CELLSPACE_ID = #{id} 
+	</select>		
+	
+</mapper>
